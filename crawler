@@ -1,0 +1,173 @@
+/*
+ * crawler.c - CS50 'crawler' module
+ *
+ * see crawler.h or more information.
+ *
+ * Julian Grunauer, January 2019
+ */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <limits.h>
+#include <ctype.h>
+#include <math.h>
+#include <stdbool.h>
+#include "bag.h"
+#include "hashtable.h"
+#include "file.h"
+#include "memory.h"
+#include "webpage.h"
+#include "pagedir.h"
+
+/**************** function declarations ****************/
+void crawler(webpage_t *seed, char *dir);
+void page_fetcher(webpage_t *page);
+void page_scanner(webpage_t *page);
+void itemdelete(void* item);
+void delete(void* item);
+inline static void logr(const char *word, const int depth, const char *url);
+
+/**************** global variables ****************/
+bag_t *bag;
+hashtable_t *hash;
+int maxDepth;
+int filecounter;
+
+/**************** functions ****************/
+
+//crawls each url in bag and saves the page depending on depth
+void crawler(webpage_t *seed, char *dir)
+{
+    //declare/initialize variables
+    int depth;
+    filecounter = 1;
+    while ((seed = bag_extract(bag)) != NULL) {
+        depth = webpage_getDepth(seed);
+        if (depth <= maxDepth) {
+            page_fetcher(seed);
+            page_scanner(seed);
+            if (page_saver(seed, dir, filecounter)) {
+                filecounter++;
+            }
+        }
+        webpage_delete(seed);
+    }
+}
+
+//fetches html for each page
+void page_fetcher(webpage_t *page)
+{
+    if(webpage_fetch(page) == false) {
+        printf("failed to fetch url");
+    }
+    int depth = webpage_getDepth(page);
+    char *url = webpage_getURL(page);
+    char *word = "Fetched";
+    logr(word, depth, url);
+}
+
+//Scans for all urls in page and adds them to hashtable/bag
+void page_scanner(webpage_t *page)
+{
+    int pos = 0; //position in html while searching for url
+    char *result; //next url
+    int depth = webpage_getDepth(page);
+    char *word = "Scanning";
+    char *url = webpage_getURL(page);
+    logr(word, depth, url);
+    while ((pos = webpage_getNextURL(page, pos, &result)) > 0) {
+        char *word2 = "Found";
+        logr(word2, depth, result);
+        if (IsInternalURL(result)) {
+            char* tmp = malloc(sizeof(char));
+            if (tmp == NULL) {
+                printf("Error allocating memory");
+                exit(5);
+            }
+            strcpy(tmp, "");
+            //checking if already in hash
+            if(hashtable_insert(hash, result, tmp)) {
+                webpage_t *site = webpage_new(result, depth+1, NULL);
+                bag_insert(bag, site);
+                char *word3 = "Added";
+                logr(word3, depth, result);
+            } else {
+                char *word4 = "IgnExtrn";
+                logr(word4, depth, result);
+                free(tmp);
+            }
+        }
+        free(result);
+    }
+}
+
+//checks inputs, intializes structures, and calls functions
+int main(int argc, char *argv[]) {
+    //must be only 3 arguments for ./crawler
+    if (argc != 4) {
+        printf("Must be exactly 3 inputs in the form of: [crawler seedURL"
+        "pageDirectory maxDepth]\n");
+        exit(1);
+    } else {
+        //verifies that the url is normalized
+        if (NormalizeURL(argv[1]) == false || IsInternalURL(argv[1]) == false) {
+            printf("Error: Argument for seedURL cant be parsed/normalized or"
+                   " url is not internal\n");
+            exit(2);
+        }
+        //calls function for common library to check if webpage exists
+        if (check_pagedir(argv[2]) == false) {
+            printf("Error: Argument for pageDirectory must be an existing"
+                   " directory\n");
+            exit(3);
+        }
+        //Checking that depth is not a negative number or greater than MAX_INT
+        char *tmp;
+        maxDepth = strtol(argv[3], &tmp, 10);
+        if (!(maxDepth >= 0 && maxDepth < INT_MAX)) {
+            printf("Depth provided is invalid\n");
+            exit(4);
+        }
+        //iterate through characters of 3rd argument to verify thats its
+        //a valid number
+        for (int i = 0; argv[3][i] != '\0'; i++) {
+            if (isdigit(argv[3][i]) == 0) {
+                printf("Error: Argument for maxDepth must be an number\n");
+                exit(4);
+            }
+        }
+        //initialize globals
+        bag = bag_new();
+        hash = hashtable_new(150);
+        webpage_t *seed = webpage_new(argv[1], 0, NULL);
+        char *pagedir = malloc(200);
+        if (pagedir == NULL) {
+            printf("Error allocating memory");
+            exit(5);
+        }
+        strcpy(pagedir, argv[2]);
+        //insert initial page into bag
+        bag_insert(bag, seed);
+        //crawl pages
+        crawler(seed, pagedir);
+        //free allocated memory
+        bag_delete(bag, webpage_delete);
+        hashtable_delete(hash, delete);
+        free(pagedir);
+    }
+}
+
+//Used as a function pointer and passed to hashtable_delete
+void delete(void* item)
+{
+    if (item != NULL) {
+        free(item);
+    }
+}
+
+//Used to print testing of fetching, scanning, and adding of webpages
+inline static void logr(const char *word, const int depth, const char *url)
+{
+    printf("%2d %*s%9s: %s\n", depth, depth, "", word, url);
+}
