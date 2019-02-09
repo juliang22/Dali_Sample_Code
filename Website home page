@@ -1,0 +1,92 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Juliangrunauer</title>
+    <meta name="csrf-param" content="authenticity_token" />
+<meta name="csrf-token" content="MtWFCt3Hqt762ugMlBjqps0oUgLl3xKrW2L1r5sWvRE3EHpxk2xD5wtvNin+4PfrPEIvJDDJujJxOdKpNu0ilw==" />
+
+    <link rel="stylesheet" media="all" href="/assets/application-1a2330650ac4d09df4712750138d0925b420f3382b4d319bd91f7cb9a86cacf3.css" data-turbolinks-track="reload" />
+    <script src="/assets/application-2f309ab844fcbbf4746b292a016469a8b0315d0aac5e5906088fd644e7de972e.js" data-turbolinks-track="reload"></script>
+  </head>
+
+  <body>
+    <div class="main-page-body">
+    <div class="overlay" id="overlay">
+  <button class="hamburger hamburger--collapse" id="hamburger" type="button">
+    <span class="hamburger-box">
+      <span class="hamburger-inner"></span>
+    </span>
+  </button>
+  <div class="overlay-content" id="overlay-content">
+    <a class="vector-hand" href="https://dali-website-219716.appspot.com/" id="handOverlay"><img src="/assets/vectorHand-4b9afc46a1280f7d59880172752aa317e7f08fa3efd94a62b0fe96b6d19bee08.png" alt="Vectorhand" /></a>
+    <ol>
+      <li><a class="about" href="/about"> about </a></li>
+      <li><a class="contact" href="/contact"> contact </a></li>
+      <li><a class="terms-of-use" href="/terms"> terms of use </a></li>
+      <li><a class="privacy-policy" href="/privacy"> privacy policy</a></li>
+    </ol>
+  </div>
+</div>
+
+    <div class="homepage-navbar">
+      <a class="vector-hand" href="https://dali-website-219716.appspot.com/" id="vectorHand"><img src="/assets/vectorHand-4b9afc46a1280f7d59880172752aa317e7f08fa3efd94a62b0fe96b6d19bee08.png" alt="Vectorhand" /></a>
+      <div class="navbar-items">
+        <ol>
+          <li><a class="about" href="/about"> about </a></li>
+          <li><a class="contact" href="/contact"> contact </a></li>
+          <li><a class="terms-of-use" href="/devII"> DEV II </a></li>
+        </ol>
+      </div>
+    </div>
+    <div class="content-box">
+      <div class="title-box">
+        <div class="title-box-content">
+          <div class="toldly-name">
+            <div class="name">
+              Julian Grunauer
+            </div>
+            <div class="remix">
+              Dartmouth 2021
+            </div>
+          </div>
+          <div class="toldly-logo">
+            <img src="/assets/wordConfettis@3x-b95ace6efb7248351b701e801a8f543dd24219816750f4ae64766b1bb149fe1c.png" alt="Wordconfettis@3x" />
+          </div>
+          <div class="button-container">
+            <a class="ctas-button" href="https://drive.google.com/file/d/16nf8Q9sXLw4vrkELlXvYDaJ41TJmB8Q_/view" target="_blank"> Resume</a>
+          </div>
+        </div>
+      </div>
+    <div class="animation-box">
+      <div class="animation-box-content">
+        <div class="autoplay">
+          <div id="animation1">
+            <div class="animation-title" id="animation-title1">
+              <h1>HELLO!</h1>
+              <h2>This is a website I made</h2>
+              <h2>for my Dali Lab App!</h2>
+            </div>
+          </div>
+          <div id="animation3">
+            <div class="animation-title" id="animation-title3">
+              <h1>$$$</h1>
+              <h2>You may think I just want to make</h2>
+              <h2>MONEY with an on-campus job...</h2>
+            </div>
+          </div>
+          <div id="animation2">
+            <div class="animation-title" id="animation-title2">
+              <h1>LIKE</h1>
+              <h2>But I actually love coding and</h2>
+              <h2>can't wait to improve my skills!</h2>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+  </body>
+</html>
