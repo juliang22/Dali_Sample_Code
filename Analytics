@@ -1,0 +1,140 @@
+<div class="main-container">
+  <h3 class: "user-chart">Daily Platform Highlights</h3>
+    <div class="stats-container bg-white border rounded p2">
+      <div class="stats-group">
+        <div class="stats-number">
+          <%= User.new_users.real_users.count %>
+        </div>
+        <div class="stats-label">
+          new users
+        </div>
+      </div>
+      <div class="stats-group">
+        <div class="stats-number">
+          <%= Post.includes(:user).where("posts.created_at > ?", 1.day.ago).where(users: { promotional: false}).where.not(users: {role: "publisher"}).count %>
+        </div>
+        <div class="stats-label">
+          posts created
+        </div>
+      </div>
+      <div class="stats-group">
+        <div class="stats-number">
+          <%=  Post.includes(:user).where("posts.created_at > ?", 1.day.ago).where(users: { promotional: false}).where.not(users: {role: "publisher"}).group("users.id").count.count %>
+        </div>
+        <div class="stats-label">
+          unique users that posted
+        </div>
+      </div>
+      <div class="stats-group">
+        <div class="stats-number">
+          <%= ContactInvite.where("created_at > ?", 1.day.ago).count %>
+        </div>
+        <div class="stats-label">
+          sent invites
+        </div>
+      </div>
+    </div>
+    <h3> Monthly Viral Loop</h3>
+    <div class="stats-container bg-white border rounded p2">
+      <div class="stats-group">
+        <div class="stats-number">
+          <%= @viral_coefficient_data[:user_count] %>
+        </div>
+        <div class="stats-label">
+          new users
+        </div>
+      </div>
+      <div class="stats-group">
+        <div class="stats-number">
+          <%= @viral_coefficient_data[:users_with_contacts] %>
+        </div>
+        <div class="stats-label">
+          with contacts
+        </div>
+      </div>
+      <div class="stats-group">
+        <div class="stats-number">
+          <%= @viral_coefficient_data[:invites_count] %>
+        </div>
+        <div class="stats-label">
+          monthly sent invites
+        </div>
+      </div>
+      <div class="stats-group">
+        <div class="stats-number">
+          <%= @viral_coefficient_data[:successful_invites_count] %>
+        </div>
+        <div class="stats-label">
+          monthly invite conversions
+        </div>
+      </div>
+      <div class="stats-group">
+        <div class="stats-number">
+          <%= (@viral_coefficient_data[:successful_invites_count] / @viral_coefficient_data[:user_count].to_f).round(2) %>
+        </div>
+        <div class="stats-label">
+          viral coefficient
+        </div>
+      </div>
+    </div>
+    <h3> New User Actions </h3>
+    <div class="stats-container bg-white border rounded p2">
+      <div class="stats-group">
+        <div class="stats-number">
+          <%= User.new_users.real_users.count %>
+        </div>
+        <div class="stats-label">
+          new users
+        </div>
+      </div>
+      <div class="stats-group">
+        <div class="stats-number">
+          <%= User.new_users.real_users.with_contacts.count %>
+        </div>
+        <div class="stats-label">
+          with contacts
+        </div>
+      </div>
+      <div class="stats-group">
+        <div class="stats-number">
+          <%= User.new_users.real_users.includes(:posts).where.not(posts: { id: nil }).uniq.count %>
+        </div>
+        <div class="stats-label">
+          posted
+        </div>
+      </div>
+      <div class="stats-group">
+        <div class="stats-number">
+          <%= ContactInvite.where(user_id: User.new_users.real_users.pluck(:id)).count %>
+        </div>
+        <div class="stats-label">
+          sent invites
+        </div>
+      </div>
+    </div>
+    <h2> New Users </h2>
+    <%= line_chart User.where("created_at > ?", 30.days.ago).where(promotional: false).group_by_day(:created_at).count %>
+    <br>
+    <h2> New Users with Contacts </h2>
+    <%= line_chart User.includes(:contacts).where.not(contacts: { id: nil }).where("users.created_at > ?", 30.days.ago).where(promotional: false).group_by_day(:created_at).count %>
+    <br>
+    <h2> Contact Invites </h2>
+    <%= line_chart ContactInvite.where("created_at > ?", 30.days.ago).group_by_day(:created_at).count %>
+    <br>
+  <h3>Posts </h3>
+  <h2> Total </h2>
+  <%= line_chart Post.where(published: true).where("posts.created_at > ?", 30.days.ago).real_posts.group_by_day("posts.created_at").count %>
+  <h2> Originals </h2>
+  <%= line_chart Post.where(published: true).where(parent_id: nil).where("posts.created_at > ?", 30.days.ago).real_posts.group_by_day("posts.created_at").count %>
+  <h2> Remixes </h2>
+  <%= line_chart Post.where(published: true).where.not(parent_id: nil).where("posts.created_at > ?", 30.days.ago).real_posts.group_by_day("posts.created_at").count %>
+  <h2> Daily - Unique Users Posting </h2>
+  <%= bar_chart Post.where("posts.created_at > ?", 1.day.ago).real_posts.group("users.id").count %>
+  <h2> Unique Users Posting Per Day </h2>
+  <%= line_chart User.real_users.includes(:posts).where.not(posts: { id: nil }).uniq.where("posts.created_at > ?", 30.days.ago).group_by_day("posts.created_at").count %>
+  <h2> Invited contacts that joined </h2>
+  <%= line_chart Notification.where("created_at > ?", 30.days.ago).where("text ILIKE ?", "%just joined told.ly%").group_by_day(:created_at).count %>
+<!-- Out of all the users posting content, this is the amount that posted ... I think -->
+  <h2> Unique User's Posting Remixes </h2>
+    <%= line_chart User.real_users.includes(:posts).where.not(posts: { id: nil }).where.not(posts: {parent_id: nil}).uniq.where("posts.created_at > ?", 30.days.ago).group_by_day("posts.created_at").count %>
+</div>
